@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Jardín Amarillo</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Lato:wght@100;300&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; touch-action: manipulation; }
+body { font-family: 'Lato', sans-serif; background: #87ceeb; position: relative; }
+
+#sky {
+  position: fixed; inset: 0;
+  background: linear-gradient(to bottom, #5bb8f5 0%, #a8d8f0 50%, #c8edf8 100%);
+  transition: background 2s; z-index: 0;
+}
+#sky.noche   { background: linear-gradient(to bottom, #0a0e2a 0%, #1a2240 60%, #2a3060 100%); }
+#sky.atardecer { background: linear-gradient(to bottom, #e8622a 0%, #f4a54a 40%, #ffd080 100%); }
+
+#astro {
+  position: fixed; width: 55px; height: 55px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 38%, #fff9a0, #ffd700);
+  box-shadow: 0 0 30px 12px rgba(255,215,0,0.45);
+  top: 40px; left: 40px; z-index: 1; transition: all 2s;
+}
+#astro.noche {
+  background: radial-gradient(circle at 38% 38%, #e8e8cc, #c0c0a0);
+  box-shadow: 0 0 18px 6px rgba(200,200,160,0.25);
+  top: 35px; left: calc(100vw - 90px); width: 42px; height: 42px;
+}
+#astro.atardecer {
+  background: radial-gradient(circle at 38% 38%, #ffcc44, #ff7700);
+  box-shadow: 0 0 50px 20px rgba(255,100,0,0.35);
+  top: 72%; left: 10%;
+}
+
+.nube {
+  position: fixed; border-radius: 40px;
+  background: rgba(255,255,255,0.85);
+  z-index: 2; animation: moverNube linear infinite;
+  transition: opacity 2s, background 2s;
+}
+.nube::before {
+  content:''; position:absolute; background:inherit; border-radius:50%;
+  width:60%; height:160%; top:-40%; left:15%;
+}
+.nube::after {
+  content:''; position:absolute; background:inherit; border-radius:50%;
+  width:45%; height:140%; top:-30%; right:15%;
+}
+.nube.noche    { opacity:0 !important; }
+.nube.atardecer { background: rgba(255,170,100,0.65); }
+@keyframes moverNube {
+  from { transform: translateX(-220px); }
+  to   { transform: translateX(calc(100vw + 220px)); }
+}
+
+.estrella {
+  position: fixed; background: #fff; border-radius: 50%;
+  opacity: 0; transition: opacity 2s; z-index: 1;
+  animation: twinkle ease-in-out infinite;
+}
+.estrella.noche { opacity: var(--op); }
+@keyframes twinkle {
+  0%,100% { transform: scale(1); }
+  50%     { transform: scale(1.8); }
+}
+
+#suelo {
+  position: fixed; bottom: 0; left: 0; right: 0; height: 160px;
+  z-index: 3;
+  background: linear-gradient(to bottom, #5a9a38 0%, #3d7a22 25%, #6b4c20 55%, #4a3010 100%);
+  border-radius: 55% 55% 0 0 / 22px 22px 0 0;
+}
+#suelo::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:40px;
+  background: radial-gradient(ellipse at 50% 0%, #6eb840 0%, #4a8a28 100%);
+  border-radius: 55% 55% 0 0 / 22px 22px 0 0;
+}
+
+.hierba {
+  position: fixed; bottom: 152px; width: 3px;
+  background: linear-gradient(to top, #2d6010, #6eb840);
+  border-radius: 2px 2px 0 0; transform-origin: bottom center;
+  z-index: 4; animation: swayGrass ease-in-out infinite alternate;
+}
+@keyframes swayGrass {
+  from { transform: rotate(var(--a1)); }
+  to   { transform: rotate(var(--a2)); }
+}
+
+/* FLOR */
+.flor-wrap {
+  position: fixed; bottom: 148px; z-index: 5;
+  transform-origin: bottom center;
+  animation: sway ease-in-out infinite alternate;
+  cursor: pointer; -webkit-tap-highlight-color: transparent;
+  display: flex; flex-direction: column; align-items: center;
+}
+@keyframes sway {
+  from { transform: rotate(var(--s1)); }
+  to   { transform: rotate(var(--s2)); }
+}
+
+.tallo {
+  width: 6px; border-radius: 3px; position: relative;
+  background: linear-gradient(to top, #2a5e18, #52a030);
+  z-index: -1;
+}
+.tallo::before {
+  content:''; position:absolute; width:15px; height:9px;
+  background:#48903a; border-radius:50% 0 50% 0;
+  left:5px; top:30%; transform:rotate(-20deg);
+}
+.tallo::after {
+  content:''; position:absolute; width:13px; height:8px;
+  background:#3a7a2c; border-radius:0 50% 0 50%;
+  right:5px; top:58%; transform:rotate(20deg);
+}
+
+.cabeza { position: relative; margin: 0 auto; }
+
+/* MARIPOSAS */
+.mariposa {
+  position: fixed; z-index: 20; pointer-events: none;
+  animation: flyButterfly linear infinite;
+}
+@keyframes flyButterfly {
+  0%   { transform: translate(0,0); }
+  25%  { transform: translate(var(--dx1),var(--dy1)); }
+  50%  { transform: translate(var(--dx2),var(--dy2)); }
+  75%  { transform: translate(var(--dx3),var(--dy3)); }
+  100% { transform: translate(0,0); }
+}
+.mariposa svg { animation: flapWings ease-in-out 0.28s infinite alternate; }
+@keyframes flapWings {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0.2); }
+}
+
+.abeja {
+  position: fixed; z-index: 20; pointer-events: none;
+  font-size: 16px; animation: flyBee linear infinite;
+}
+@keyframes flyBee {
+  0%   { transform: translate(0,0); }
+  33%  { transform: translate(var(--bx1),var(--by1)); }
+  66%  { transform: translate(var(--bx2),var(--by2)); }
+  100% { transform: translate(0,0); }
+}
+
+.polen {
+  position: fixed; border-radius: 50%; pointer-events: none;
+  z-index: 8; animation: floatPollen linear forwards;
+}
+@keyframes floatPollen {
+  0%   { opacity:0; transform:translateY(0) translateX(0) scale(0); }
+  15%  { opacity:0.8; transform:translateY(-8px) scale(1); }
+  85%  { opacity:0.5; }
+  100% { opacity:0; transform:translateY(-90px) translateX(var(--px)) scale(0.4); }
+}
+
+#ui {
+  position: fixed; top: 14px; right: 12px; z-index: 100; display: flex; gap: 6px;
+}
+.btn {
+  background: rgba(255,255,255,0.3); backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); border-radius: 20px;
+  padding: 6px 11px; font-family: 'Lato', sans-serif; font-weight: 300;
+  font-size: 0.7rem; letter-spacing: 0.05em; color: #222; cursor: pointer;
+  transition: all 0.25s; -webkit-tap-highlight-color: transparent;
+}
+.btn:active { transform: scale(0.95); }
+.btn.dark { color: #dde; border-color: rgba(180,180,255,0.35); background: rgba(15,20,55,0.45); }
+
+#hint {
+  position: fixed; bottom: 172px; left: 50%; transform: translateX(-50%);
+  z-index: 50; text-align: center; pointer-events: none; white-space: nowrap;
+}
+#hint h1 {
+  font-family: 'Abril Fatface', serif; font-size: clamp(1.4rem, 6vw, 2.2rem);
+  color: rgba(255,255,255,0.95); text-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+#hint p {
+  font-weight: 100; font-size: 0.65rem; letter-spacing: 0.3em;
+  color: rgba(255,255,255,0.7); text-transform: uppercase; margin-top: 3px;
+  animation: fadeHint 3s 3s ease forwards;
+}
+@keyframes fadeHint { to { opacity: 0; } }
+
+.burst-dot {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 200;
+  animation: burstOut 0.65s ease-out forwards;
+}
+@keyframes burstOut {
+  0%   { opacity:1; transform:translate(-50%,-50%) scale(0); }
+  100% { opacity:0; transform:translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.2); }
+}
+</style>
+</head>
+<body>
+
+<div id="sky"></div>
+<div id="astro"></div>
+<div id="suelo"></div>
+
+<script>
+// ── MODO FIJO: ATARDECER ────────────────────────────────────────
+function setModo(m) {
+  document.getElementById('sky').className   = m;
+  document.getElementById('astro').className = m;
+  document.querySelectorAll('.nube').forEach(n => { n.className='nube atardecer'; });
+}
+
+// ── NUBES ───────────────────────────────────────────────────────
+[[55,110,28,0,32],[90,80,20,-8,50],[30,150,36,-3,40],[110,70,18,-18,60]].forEach(([y,w,h,del,dur])=>{
+  const el=document.createElement('div');
+  el.className='nube';
+  el.style.cssText=`top:${y}px;width:${w}px;height:${h}px;animation-duration:${dur}s;animation-delay:${del}s;`;
+  document.body.appendChild(el);
+});
+
+// ── ESTRELLAS ───────────────────────────────────────────────────
+for(let i=0;i<60;i++){
+  const el=document.createElement('div'); el.className='estrella';
+  const op=(Math.random()*0.5+0.3).toFixed(2);
+  el.style.cssText=`left:${Math.random()*100}vw;top:${Math.random()*55}vh;width:${Math.random()<0.2?4:2}px;height:${Math.random()<0.2?4:2}px;--op:${op};animation-duration:${2+Math.random()*3}s;animation-delay:${Math.random()*3}s;`;
+  document.body.appendChild(el);
+}
+
+// ── HIERBA ──────────────────────────────────────────────────────
+for(let i=0;i<90;i++){
+  const el=document.createElement('div'); el.className='hierba';
+  const h=8+Math.random()*18;
+  el.style.cssText=`left:${Math.random()*100}vw;height:${h}px;--a1:${(-3+Math.random()*2).toFixed(1)}deg;--a2:${(1+Math.random()*4).toFixed(1)}deg;animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*2}s;opacity:${(0.6+Math.random()*0.4).toFixed(2)};`;
+  document.body.appendChild(el);
+}
+
+// ── FUNCIÓN CENTRAL: renderFlor ─────────────────────────────────
+// Coloca pétalos por trigonometría y centro encima — mismo método que flor-test
+function renderFlor(cab, n, pW, pH, radio, c1, c2, cc, cSz) {
+  const sz = cab.offsetWidth || parseFloat(cab.style.width);
+  let html = '';
+  for(let i=0;i<n;i++){
+    const angRad = (360/n)*i * Math.PI/180;
+    const cx = 50 + (radio/sz*100) * Math.sin(angRad);
+    const cy = 50 - (radio/sz*100) * Math.cos(angRad);
+    html += `<div style="position:absolute;width:${pW}px;height:${pH}px;background:linear-gradient(to top,${c2},${c1});border-radius:50%;top:${cy}%;left:${cx}%;margin-left:-${pW/2}px;margin-top:-${pH}px;transform-origin:center bottom;transform:rotate(${(360/n)*i}deg);"></div>`;
+  }
+  // centro encima
+  html += `<div style="position:absolute;width:${cSz}px;height:${cSz}px;background:radial-gradient(circle at 38% 38%,${cc},#1a0800);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 10px ${cc};z-index:2;"></div>`;
+  cab.innerHTML = html;
+}
+
+// ── TIPOS DE FLORES ─────────────────────────────────────────────
+// peso 3 = amarilla, peso 1 = color
+const tipos = [
+  // Girasol — el que ajustamos juntos
+  { peso:1, talloH:[70,110], sz:[70,90],
+    vars:[['#ffe033','#ffaa00','#5c3317'],['#ffd700','#ff9500','#3d1a00'],['#fff176','#ffc107','#6d3a00']],
+    build(cab,col,sz){ renderFlor(cab,16,Math.round(sz*0.20),Math.round(sz*0.38),sz*0.36,col[0],col[1],col[2],Math.round(sz*0.66)); }
+  },
+];
+
+// tabla de pesos
+const tabla=[];
+tipos.forEach(t=>{ for(let i=0;i<t.peso;i++) tabla.push(t); });
+
+function crearFlor(x, conDelay=false) {
+  const tipo = tabla[Math.floor(Math.random()*tabla.length)];
+  const col  = tipo.vars[Math.floor(Math.random()*tipo.vars.length)];
+  const talloH = tipo.talloH[0] + Math.random()*(tipo.talloH[1]-tipo.talloH[0]) | 0;
+  const sz     = tipo.sz[0]     + Math.random()*(tipo.sz[1]-tipo.sz[0]) | 0;
+  const s1 = (-3.5+Math.random()*2).toFixed(1);
+  const s2 = (0.5 +Math.random()*3).toFixed(1);
+  const dur = (2+Math.random()*2.5).toFixed(1);
+  const delay = conDelay ? (Math.random()*1.2).toFixed(2) : '0';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'flor-wrap';
+  wrap.style.cssText = `left:${x-sz/2}px;--s1:${s1}deg;--s2:${s2}deg;animation-duration:${dur}s;animation-delay:-${delay}s;opacity:0;transition:opacity 0.5s ${delay}s;`;
+
+  const cab = document.createElement('div');
+  cab.className = 'cabeza';
+  cab.style.cssText = `width:${sz}px;height:${sz}px;position:relative;overflow:visible;`;
+
+  const tallo = document.createElement('div');
+  tallo.className = 'tallo';
+  tallo.style.cssText = `height:${talloH}px;`;
+
+  wrap.appendChild(cab);
+  wrap.appendChild(tallo);
+  document.body.appendChild(wrap);
+
+  // build después de añadir al DOM (para offsetWidth)
+  requestAnimationFrame(()=>{
+    tipo.build(cab, col, sz);
+    wrap.style.opacity = '1';
+  });
+
+  const doTouch = (cx,cy) => { burst(cx,cy,col[0]); spawnPolen(x, window.innerHeight-148-talloH, col[0]); };
+  wrap.addEventListener('click',   e => { e.stopPropagation(); doTouch(e.clientX,e.clientY); });
+  wrap.addEventListener('touchend',e => { e.preventDefault(); const t=e.changedTouches[0]; doTouch(t.clientX,t.clientY); },{passive:false});
+}
+
+// ── JARDÍN INICIAL ──────────────────────────────────────────────
+function plantarInicial(){
+  const W=window.innerWidth;
+  const n=Math.max(8,Math.floor(W/46));
+  for(let i=0;i<n;i++){
+    const x=30+(i/(n-1))*(W-60)+(Math.random()-0.5)*22;
+    setTimeout(()=>crearFlor(x,true), i*110+200);
+  }
+}
+
+// ── GATOS VOLADORES ─────────────────────────────────────────────
+function r(m){return ((Math.random()-0.5)*m).toFixed(0);}
+const gatosConfig = [
+  { cuerpo:'#ff8c00', barriga:'#ffcc88', orejas:'#ff8c00', cara:'#ff8c00', nombre:'naranja' },
+  { cuerpo:'#222222', barriga:'#444444', orejas:'#222222', cara:'#222222', nombre:'negro' },
+  { cuerpo:'#f5f5f5', barriga:'#ffffff', orejas:'#f5f5f5', cara:'#f5f5f5', nombre:'blanco' },
+  { cuerpo:'#f5f5f5', barriga:'#ffffff', orejas:'#f5f5f5', cara:'#f5f5f5', manchas:true, nombre:'blanco-negro' },
+];
+
+function svgGato(cfg, w=36) {
+  const manchas = cfg.manchas ? `
+    <ellipse cx="11" cy="9" rx="4" ry="5" fill="#222"/>
+    <ellipse cx="22" cy="14" rx="3" ry="4" fill="#222"/>
+    <circle cx="18" cy="7" rx="2.5" fill="#222"/>
+  ` : '';
+  const ojosColor = cfg.nombre==='blanco' || cfg.manchas ? '#444' : '#88ff88';
+  return `<svg width="${w}" height="${w*0.75}" viewBox="0 0 40 30" xmlns="http://www.w3.org/2000/svg">
+    <!-- cola -->
+    <path d="M34 20 Q42 14 40 8 Q38 4 35 7 Q37 12 33 17Z" fill="${cfg.cuerpo}"/>
+    <!-- cuerpo -->
+    <ellipse cx="18" cy="20" rx="13" ry="9" fill="${cfg.cuerpo}"/>
+    ${manchas}
+    <!-- barriga -->
+    <ellipse cx="18" cy="22" rx="7" ry="5" fill="${cfg.barriga}" opacity="0.7"/>
+    <!-- cabeza -->
+    <circle cx="10" cy="12" r="9" fill="${cfg.cara}"/>
+    <!-- orejas -->
+    <polygon points="4,6 2,0 8,4" fill="${cfg.orejas}"/>
+    <polygon points="14,5 16,0 11,4" fill="${cfg.orejas}"/>
+    <polygon points="4.5,5.5 3,1.5 7.5,4" fill="#ffaaaa" opacity="0.6"/>
+    <polygon points="13.5,4.5 15,1 11.5,3.5" fill="#ffaaaa" opacity="0.6"/>
+    <!-- ojos -->
+    <ellipse cx="7.5" cy="12" rx="2" ry="2.2" fill="${ojosColor}"/>
+    <ellipse cx="12.5" cy="12" rx="2" ry="2.2" fill="${ojosColor}"/>
+    <circle cx="7.5" cy="12" r="1" fill="#111"/>
+    <circle cx="12.5" cy="12" r="1" fill="#111"/>
+    <circle cx="8" cy="11.5" r="0.4" fill="white"/>
+    <circle cx="13" cy="11.5" r="0.4" fill="white"/>
+    <!-- nariz -->
+    <ellipse cx="10" cy="14.5" rx="1.2" ry="0.8" fill="#ff8888"/>
+    <!-- bigotes -->
+    <line x1="2" y1="14" x2="8" y2="14.5" stroke="#aaa" stroke-width="0.5"/>
+    <line x1="2" y1="15.5" x2="8" y2="15" stroke="#aaa" stroke-width="0.5"/>
+    <line x1="12" y1="14.5" x2="18" y2="14" stroke="#aaa" stroke-width="0.5"/>
+    <line x1="12" y1="15" x2="18" y2="15.5" stroke="#aaa" stroke-width="0.5"/>
+    <!-- patitas -->
+    <ellipse cx="9" cy="28" rx="3" ry="2" fill="${cfg.cuerpo}"/>
+    <ellipse cx="17" cy="29" rx="3" ry="2" fill="${cfg.cuerpo}"/>
+    <ellipse cx="25" cy="28" rx="3" ry="2" fill="${cfg.cuerpo}"/>
+  </svg>`;
+}
+
+gatosConfig.forEach((cfg, i) => {
+  const el = document.createElement('div');
+  el.style.cssText = `position:fixed;z-index:20;pointer-events:none;animation:flyButterfly linear infinite;`;
+  const sx = 60 + Math.random()*(window.innerWidth-120);
+  const sy = 60 + Math.random()*(window.innerHeight*0.40);
+  const dur = 8 + Math.random()*7;
+  el.style.left = sx+'px';
+  el.style.top  = sy+'px';
+  el.style.setProperty('--dx1', r(160)+'px');
+  el.style.setProperty('--dy1', r(110)+'px');
+  el.style.setProperty('--dx2', r(160)+'px');
+  el.style.setProperty('--dy2', r(110)+'px');
+  el.style.setProperty('--dx3', r(160)+'px');
+  el.style.setProperty('--dy3', r(110)+'px');
+  el.style.animationDuration = dur+'s';
+  el.style.animationDelay   = -(Math.random()*dur)+'s';
+
+  // el gato flota y se tambalea
+  const inner = document.createElement('div');
+  inner.style.cssText = `animation: gatoFloat ease-in-out ${1.5+Math.random()*0.5}s infinite alternate;`;
+  inner.innerHTML = svgGato(cfg, 38);
+  el.appendChild(inner);
+  document.body.appendChild(el);
+});
+
+// animación de floteo suave
+const styleGato = document.createElement('style');
+styleGato.textContent = `@keyframes gatoFloat { from { transform: translateY(0) rotate(-5deg); } to { transform: translateY(-8px) rotate(5deg); } }`;
+document.head.appendChild(styleGato);
+
+// ── EFECTOS ─────────────────────────────────────────────────────
+function spawnPolen(x,y,color){
+  for(let i=0;i<4;i++){
+    const el=document.createElement('div'); el.className='polen';
+    const sz=2+Math.random()*4;
+    el.style.cssText=`left:${x+(Math.random()-0.5)*24}px;top:${y}px;width:${sz}px;height:${sz}px;background:${color};box-shadow:0 0 4px ${color};--px:${r(50)}px;animation-duration:${2.5+Math.random()*2.5}s;animation-delay:${Math.random()*0.5}s;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),6000);
+  }
+}
+function burst(x,y,color){
+  for(let i=0;i<9;i++){
+    const el=document.createElement('div'); el.className='burst-dot';
+    const sz=5+Math.random()*7, ang=Math.random()*360, dist=18+Math.random()*35;
+    el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${color};box-shadow:0 0 6px ${color};--tx:${(Math.cos(ang*Math.PI/180)*dist).toFixed(1)}px;--ty:${(Math.sin(ang*Math.PI/180)*dist).toFixed(1)}px;`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),700);
+  }
+}
+
+// ── TOUCH SUELO ─────────────────────────────────────────────────
+const suelo=document.getElementById('suelo');
+suelo.addEventListener('touchend',e=>{ e.preventDefault(); const t=e.changedTouches[0]; crearFlor(t.clientX); burst(t.clientX,t.clientY,'#6eb840'); },{passive:false});
+suelo.addEventListener('click',e=>{ crearFlor(e.clientX); burst(e.clientX,e.clientY,'#6eb840'); });
+
+// Polen ambiental
+setInterval(()=>{
+  const flores=document.querySelectorAll('.flor-wrap');
+  if(!flores.length) return;
+  const f=flores[Math.floor(Math.random()*flores.length)];
+  const rect=f.getBoundingClientRect();
+  spawnPolen(rect.left+rect.width/2, rect.top, '#ffd700');
+},900);
+
+setModo('atardecer');
+plantarInicial();
+</script>
+</body>
+</html>
